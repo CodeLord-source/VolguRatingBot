@@ -23,7 +23,7 @@ namespace RatingBot
             services.AddSingleton<IRepository, StudentRepository>(); 
             services.AddDbContext<StudentContext>(options =>
             options.UseNpgsql("name=ConnectionStrings:DefaultConnection"),ServiceLifetime.Singleton);
-            services.AddTelegrammBot(configuration);
+            services.AddTelegrammBot(configuration); 
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -37,8 +37,7 @@ namespace RatingBot
             app.UseStaticFiles();
             app.UseRouting();
             app.UseHttpsRedirection();
-            app.UseAuthorization();
-
+            app.UseAuthorization(); 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

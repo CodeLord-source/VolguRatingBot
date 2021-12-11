@@ -5,7 +5,8 @@ using RatingBot.Models;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
-using VolguRatingBot.Services.Repository.Interface;
+using VolguRatingBot.Services.Repository.Interface;  
+
 
 namespace RatingBot.Services
 {
@@ -16,7 +17,7 @@ namespace RatingBot.Services
         private readonly IRepository repository;
         private readonly AsyncPassiveStateMachine<DialogState, Actions> machine;
 
-        public Update Update { get; set; }
+        public Update? Update { get; set; }
 
         public DialogStateMachine(ILogger<DialogStateMachine> logger, ITelegramBotGetter getter, IRepository repository)
         {
@@ -143,7 +144,12 @@ namespace RatingBot.Services
 
         public async Task ExecuteCommand(Update update)
         {
-            var action = (update.Message.Text) switch
+            var c=new Library.VityaKiloun();
+
+            var a=c.Foo();
+            Console.WriteLine(a);
+
+            var action = (update?.Message?.Text) switch
             {
                 ("/start") => Actions.Start,
 
