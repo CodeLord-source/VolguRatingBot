@@ -1,8 +1,10 @@
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 using RatingBot;
 
 public class Programm
 {
-    public static  void Main(string[] args)
+    public static void Main(string[] args)
     {
         CreateHostBuilder(args).Build().Run();
     }

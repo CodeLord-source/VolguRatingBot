@@ -2,7 +2,7 @@
 
 namespace RatingBot.Models
 {
-    public class StudentContext: DbContext 
+    public class StudentContext : DbContext
     {
         public DbSet<Student> Students { get; set; }
 
@@ -12,7 +12,7 @@ namespace RatingBot.Models
             Database.EnsureCreated();
         }
 
-        public  void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        public void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
 
         }

@@ -5,10 +5,10 @@ namespace RatingBot.Models
 {
     [Table("students")]
     public class Student
-    { 
+    {
         [Required]
-        [Column("created_at")] 
-        public DateTime CreatedAt { get; set; }= DateTime.UtcNow;
+        [Column("created_at")]
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         [Required]
         [Column("id")]
@@ -19,10 +19,10 @@ namespace RatingBot.Models
         [Required]
         public long ChatId { get; set; }
 
-        [Column("login")] 
+        [Column("login")]
         public string? Log { get; set; }
 
-        [Column("password")] 
+        [Column("password")]
         public string? Pass { get; set; }
 
         [Column("semester")]

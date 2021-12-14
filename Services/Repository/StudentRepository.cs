@@ -22,7 +22,7 @@ namespace VolguRatingBot.Services.Repository.Interface
 
         public async Task<Student> GetStudentAsync(long id)
         {
-            var student =await _context.Students.FirstOrDefaultAsync(x => x.ChatId == id);
+            var student = await _context.Students.FirstOrDefaultAsync(x => x.ChatId == id);
 
             return student;
         }

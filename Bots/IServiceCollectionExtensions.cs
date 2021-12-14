@@ -1,4 +1,6 @@
-﻿using RatingBot.Bots.Telegram;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using RatingBot.Bots.Telegram;
 
 namespace RatingBot.Bots
 {

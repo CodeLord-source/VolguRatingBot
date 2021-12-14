@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RatingBot.Bots;
-using RatingBot.Bots.Telegram;
 using RatingBot.Models;
 using RatingBot.Services;
 using VolguRatingBot.Services.Repository.Interface;
@@ -18,12 +17,12 @@ namespace RatingBot
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers().AddNewtonsoftJson(); 
+            services.AddControllers().AddNewtonsoftJson();
             services.AddSingleton<DialogStateMachine>();
-            services.AddSingleton<IRepository, StudentRepository>(); 
+            services.AddSingleton<IRepository, StudentRepository>();
             services.AddDbContext<StudentContext>(options =>
-            options.UseNpgsql("name=ConnectionStrings:DefaultConnection"),ServiceLifetime.Singleton);
-            services.AddTelegrammBot(configuration); 
+            options.UseNpgsql("name=ConnectionStrings:DefaultConnection"), ServiceLifetime.Singleton);
+            services.AddTelegrammBot(configuration);
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -37,7 +36,8 @@ namespace RatingBot
             app.UseStaticFiles();
             app.UseRouting();
             app.UseHttpsRedirection();
-            app.UseAuthorization(); 
+            app.UseAuthorization();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
