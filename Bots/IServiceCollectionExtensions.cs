@@ -9,6 +9,7 @@ namespace RatingBot.Bots
           
         public static IServiceCollection AddTelegrammBot(this IServiceCollection services, IConfiguration configuration)
         {
+            //extension method adding a telegram bot to the application
             var options = CheckTelegramSectionExistence(configuration);
             var tg = new TelegramBotGetter(options);
 
@@ -19,6 +20,7 @@ namespace RatingBot.Bots
 
         private static BotOptions CheckTelegramSectionExistence(IConfiguration configuration)
         {
+            //checks for the presence of the telegram bot configuration section
             var options = configuration.GetSection(BotOptions.SECTION_NAME).Get<BotOptions>();
 
             if (options == null)

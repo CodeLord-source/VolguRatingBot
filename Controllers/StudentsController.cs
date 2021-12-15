@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using RatingBot.Bots.Telegram;
 using RatingBot.Services;
 using Telegram.Bot.Types;
 
@@ -24,9 +23,16 @@ namespace RatingBot.Controllers
             if (update != null && update.Message!=null)
             {
                 await machine.ExecuteCommand(update);
+
+                logger.LogInformation("Command was executed");
+
                 return Ok();
             } 
+
+
             return BadRequest(ModelState);
+
+            logger.LogInformation("BadRequest");
         }
     }
 }

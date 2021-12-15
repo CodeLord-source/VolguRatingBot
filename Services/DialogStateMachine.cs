@@ -17,6 +17,7 @@ namespace RatingBot.Services
         private readonly AsyncPassiveStateMachine<DialogState, Actions> machine;
         private Update update;
 
+        //Possible state
         public enum DialogState
         {
             NotRegistered,
@@ -32,6 +33,7 @@ namespace RatingBot.Services
             CheckingUserRegistration
         }
 
+        //Possible actions
         public enum Actions
         {
             Start,
@@ -97,7 +99,7 @@ namespace RatingBot.Services
             builder.In(DialogState.Registered).On(Actions.ToChangeTheData).Goto(DialogState.DataChange).Execute(GoToChangeData);
             builder.In(DialogState.Registered).On(Actions.GetRating).Execute(GetRating);
             builder.In(DialogState.Registered).On(Actions.UserEnter).Execute(SendErrorMessage);
-            builder.In(DialogState.Registered).On(Actions.Start).Execute(GetButtonsForRegistered);
+            builder.In(DialogState.Registered).On(Actions.Start).Execute(SendStartMessageForRegisteredState);
             builder.In(DialogState.Registered).On(Actions.GotoRegistration).Goto(DialogState.Registration);
             //
 
@@ -139,8 +141,7 @@ namespace RatingBot.Services
             //10:for semester change state
             builder.In(DialogState.SemesterChange).On(Actions.UserEnter).Execute(SaveChangedSemester);
             builder.In(DialogState.SemesterChange).On(Actions.GotoDataChange).Goto(DialogState.DataChange);
-            //
-
+            // 
             //
 
             //initial state machine
@@ -156,6 +157,7 @@ namespace RatingBot.Services
 
         public async Task ExecuteCommand(Update upd)
         {
+            //this method execute user command
             this.update = upd;
 
             var action = (upd.Message.Text) switch
@@ -180,13 +182,15 @@ namespace RatingBot.Services
                 _ => Actions.UserEnter
             };
 
-            logger.LogInformation($"Вызвано действие {action}", LogLevel.Critical);
+            logger.LogInformation($"Вызвано действие {action}"); 
+            logger.LogInformation($"Выполнено execute command");
 
             await machine.Fire(action);
         }
 
-        private async void ChekUserRegistrationState(Actions action)
+        private async Task ChekUserRegistrationState(Actions action)
         {
+            //this method checks the registration status of the user, and switches to the appropriate
             var chatId = update.Message.Chat.Id;
             var user = await repository.GetStudentAsync(chatId);
 
@@ -277,11 +281,13 @@ namespace RatingBot.Services
                 return;
             }
 
+            logger.LogInformation("Выполнено check user registration state");
             return;
         }
 
         private async Task StartRegistration()
         {
+            //this method toggles the state of the dialog when the user wants to start registration
             var chatId = update.Message.Chat.Id;
             var student = new Student();
 
@@ -291,47 +297,56 @@ namespace RatingBot.Services
             await client.SendTextMessageAsync(chatId,
                 "Привет,я рейтинг бот,для начала тебе нужно зарегистрироваться,т.е ввести данные от сайта lk.volsu и выбрать семестр,чтобы я мог отправить тебе твои баллы.Пожалуйста,выбери одну из комманд ниже.",
                 replyMarkup: GetRegistrationButtons());
+
+            logger.LogInformation("Выполнено start registration");
         }
 
         private async Task SendErrorMessage()
         {
+            //this method will send an error message if the user entered an invalid command
             var chatId = update.Message.Chat.Id;
 
             await client.SendTextMessageAsync(chatId,
                 "Вы ввели некорректные данные,пожалуйства выберите ондну из комманд ниже.");
+
+            logger.LogInformation($"Выплнено send error message");
         }
 
         private async Task SemesterEnter()
         {
+            //this method toggles the state of the dialog if the user wants to enter a semester
             await client.SendTextMessageAsync(update.Message.Chat.Id,
                     "Выбери семестр.",
                     replyMarkup: GetSemesterButtons());
 
-            logger.LogCritical($"Выплнено semester enter");
+            logger.LogInformation($"Выплнено semester enter");
         }
 
         private async Task LoginEnter()
         {
+            //this method toggles the state of the dialog if the user wants to enter a login
             var chatId = update.Message.Chat.Id;
 
             await client.SendTextMessageAsync(chatId,
                     "Введите логин.",
                     replyMarkup: new ReplyKeyboardRemove());
 
-            logger.LogCritical($"Выплнено login enter");
+            logger.LogInformation($"Выплнено login enter");
         }
 
         private async Task PasswordEnter()
         {
+            //this method toggles the state of the dialog if the user wants to enter a password
             await client.SendTextMessageAsync(update.Message.Chat.Id,
                     "Введите пароль.",
                     replyMarkup: new ReplyKeyboardRemove());
 
-            logger.LogCritical($"Выплнено password enter");
+            logger.LogInformation($"Выплнено password enter");
         }
 
         private async Task SaveLogin()
         {
+            //this method saves the login value
             var student = await repository.GetStudentAsync(update.Message.Chat.Id);
             student.Log = update.Message.Text;
 
@@ -341,11 +356,12 @@ namespace RatingBot.Services
                    replyMarkup: GetRegistrationButtons());
             await machine.Fire(Actions.GotoRegistration);
 
-            logger.LogCritical($"Выплнено save login");
+            logger.LogInformation($"Выплнено save login");
         }
 
         private async Task SavePassword()
         {
+            //this method saves the password value
             var student = await repository.GetStudentAsync(update.Message.Chat.Id);
             student.Pass = update.Message.Text;
 
@@ -355,11 +371,12 @@ namespace RatingBot.Services
                    replyMarkup: GetRegistrationButtons());
             await machine.Fire(Actions.GotoRegistration);
 
-            logger.LogCritical($"Выплнено save password");
+            logger.LogInformation($"Выплнено save password");
         }
 
         private async Task SaveSemester()
         {
+            //this method saves the semester value
             var student = await repository.GetStudentAsync(update.Message.Chat.Id);
             student.Semester = Convert.ToInt32(update.Message.Text);
 
@@ -369,11 +386,12 @@ namespace RatingBot.Services
                    replyMarkup: GetRegistrationButtons());
             await machine.Fire(Actions.GotoRegistration);
 
-            logger.LogCritical($"Выплнено save semester");
+            logger.LogInformation($"Выплнено save semester");
         }
 
         private async Task CompleteRegistration()
         {
+            //this method toggles the state of the dialog if the user has completed registration
             var chatid = update.Message.Chat.Id;
 
             var student = await repository.GetStudentAsync(chatid);
@@ -399,28 +417,31 @@ namespace RatingBot.Services
 
         private async Task GetRating()
         {
+            //this method returns user ratings
             var chatId = update.Message.Chat.Id;
 
             await client.SendTextMessageAsync(chatId,
                $"HHH",
                replyMarkup: GetRegisteredButtons());
 
-            logger.LogCritical($"Выплнено get rating");
+            logger.LogInformation($"Выплнено get rating");
         }
 
         private async Task GoToChangeData()
         {
+            //this method toggles the state of the dialog when the user wants to update the data
             var chatId = update.Message.Chat.Id;
 
             await client.SendTextMessageAsync(chatId,
                    "Выберете одну из комманд.",
                    replyMarkup: GetChangeDataButtons());
 
-            logger.LogCritical($"Выплнено go to change data");
+            logger.LogInformation($"Выплнено go to change data");
         }
 
         private async Task SaveChangedLogin()
         {
+            //this method saves the updated login value
             var chatId = update.Message.Chat.Id;
             var student = await repository.GetStudentAsync(chatId);
 
@@ -432,11 +453,12 @@ namespace RatingBot.Services
                    replyMarkup: GetChangeDataButtons());
             await machine.Fire(Actions.GotoDataChange);
 
-            logger.LogCritical($"Выплнено save changed login");
+            logger.LogInformation($"Выплнено save changed login");
         }
 
         private async Task SaveChangedPassword()
         {
+            //this method saves the updated semester value
             var chatId = update.Message.Chat.Id;
             var student = await repository.GetStudentAsync(chatId);
 
@@ -448,11 +470,12 @@ namespace RatingBot.Services
                    replyMarkup: GetChangeDataButtons());
             await machine.Fire(Actions.GotoDataChange);
 
-            logger.LogCritical($"Выплнено save changed password");
+            logger.LogInformation($"Выплнено save changed password");
         }
 
         private async Task SaveChangedSemester()
         {
+            //this method saves the updated semester value
             var chatId = update.Message.Chat.Id;
             var student = await repository.GetStudentAsync(chatId);
 
@@ -464,11 +487,12 @@ namespace RatingBot.Services
                    replyMarkup: GetChangeDataButtons());
             await machine.Fire(Actions.GotoDataChange);
 
-            logger.LogCritical($"Выплнено save changed semester");
+            logger.LogInformation($"Выплнено save changed semester");
         }
 
         private async Task SaveChanges()
         {
+            //this method switches the state of the dialog to registered when the user finishes modifying the data
             await machine.Fire(Actions.GotoRegistered);
             var chatId = update.Message.Chat.Id;
 
@@ -476,34 +500,35 @@ namespace RatingBot.Services
                    "Изменения сохранены.",
                    replyMarkup: GetRegisteredButtons());
 
-            logger.LogCritical($"Выплнено save changes ");
+            logger.LogInformation($"Выплнено save changes ");
         }
 
-        private async Task GetButtonsForRegistered()
+        private async Task SendStartMessage()
         {
+            //this method returns the button for registered state to the user if the user accidentally deleted the chat
             var chatId = update.Message.Chat.Id;
 
             await client.SendTextMessageAsync(chatId,
                           "Выбери одну из комманд.",
                           replyMarkup: GetRegisteredButtons());
 
-            logger.LogCritical($"Выплнено complete registration");
+            logger.LogInformation($"Выплнено complete registration");
         }
 
         private static IReplyMarkup? GetRegisteredButtons()
         {
+            //returns buttons for registered state
             return new ReplyKeyboardMarkup(
 
             new List<List<KeyboardButton>>
             {
             new List<KeyboardButton>{new KeyboardButton(ButtonNames.GET_RATING), new KeyboardButton(ButtonNames.CHANGE_DATA) }
-            });
-
-
+            }); 
         }
 
         private static IReplyMarkup? GetRegistrationButtons()
         {
+            //returns registration buttons
             return new ReplyKeyboardMarkup(
 
             new List<List<KeyboardButton>>
@@ -514,6 +539,7 @@ namespace RatingBot.Services
 
         private static IReplyMarkup? GetSemesterButtons()
         {
+            //returns semester selection buttons
             return new ReplyKeyboardMarkup(
 
             new List<List<KeyboardButton>>
@@ -527,6 +553,7 @@ namespace RatingBot.Services
 
         private static IReplyMarkup? GetChangeDataButtons()
         {
+            //returns returns data change buttons
             return new ReplyKeyboardMarkup(
 
             new List<List<KeyboardButton>>

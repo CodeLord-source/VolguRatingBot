@@ -14,6 +14,7 @@ namespace VolguRatingBot.Services.Repository.Interface
 
         public async Task<int> AddAsync(Student customObject)
         {
+            //this method add student to database
             await _context.Students.AddAsync(customObject);
             await _context.SaveChangesAsync();
 
@@ -22,6 +23,7 @@ namespace VolguRatingBot.Services.Repository.Interface
 
         public async Task<Student> GetStudentAsync(long id)
         {
+            //this method finds the student by chat id and returns it
             var student = await _context.Students.FirstOrDefaultAsync(x => x.ChatId == id);
 
             return student;
@@ -29,6 +31,7 @@ namespace VolguRatingBot.Services.Repository.Interface
 
         public async Task<Student> GetStudentAsync(int id)
         {
+            //this method finds the student by id and returns it
             var student = await _context.Students.FindAsync(id);
 
             return student;
@@ -36,14 +39,19 @@ namespace VolguRatingBot.Services.Repository.Interface
 
         public async Task RemoveAsync(int id)
         {
+            //this method delete the student from database
             var student = await _context.Students.FindAsync(id);
+
             _context.Remove(student);
+
             await _context.SaveChangesAsync();
         }
 
         public async Task UpdateAsync(Student spaceObject)
         {
+            //this method update student data
             _context.Entry(spaceObject).State = EntityState.Modified;
+
             await _context.SaveChangesAsync();
         }
     }

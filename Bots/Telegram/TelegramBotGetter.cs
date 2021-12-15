@@ -15,6 +15,7 @@ namespace RatingBot.Bots.Telegram
 
         public async Task<TelegramBotClient> GetBot()
         {
+            //returns configured TelegramBotClient
             return client;
         }
     }
