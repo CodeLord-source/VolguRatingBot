@@ -69,18 +69,18 @@ namespace RatingBot.Services
             builder.In(DialogState.NotRegistered).On(Actions.GotoRegistration).Goto(DialogState.Registration);
             builder.In(DialogState.NotRegistered).On(Actions.GotoDataChange).Goto(DialogState.DataChange);
             builder.In(DialogState.NotRegistered).On(Actions.StartRegistration).Goto(DialogState.Registration).Execute(StartRegistration);
-            builder.In(DialogState.NotRegistered).On(Actions.Start).Execute(ChekUserRegistrationState(Actions.Start).Start);
-            builder.In(DialogState.NotRegistered).On(Actions.UserEnter).Execute(ChekUserRegistrationState(Actions.UserEnter).Start);
-            builder.In(DialogState.NotRegistered).On(Actions.GetRating).Execute(ChekUserRegistrationState(Actions.GetRating).Start);
-            builder.In(DialogState.NotRegistered).On(Actions.ToChangeTheData).Execute(ChekUserRegistrationState(Actions.ToChangeTheData).Start);
-            builder.In(DialogState.NotRegistered).On(Actions.EnterTheLogin).Execute(ChekUserRegistrationState(Actions.EnterTheLogin).Start);
-            builder.In(DialogState.NotRegistered).On(Actions.EnterThePassword).Execute(ChekUserRegistrationState(Actions.EnterThePassword).Start);
-            builder.In(DialogState.NotRegistered).On(Actions.EnterTheSemester).Execute(ChekUserRegistrationState(Actions.EnterTheSemester).Start);
-            builder.In(DialogState.NotRegistered).On(Actions.CompleteRegistration).Execute(ChekUserRegistrationState(Actions.CompleteRegistration).Start);
-            builder.In(DialogState.NotRegistered).On(Actions.SaveChanges).Execute(ChekUserRegistrationState(Actions.SaveChanges).Start);
-            builder.In(DialogState.NotRegistered).On(Actions.ChangeLogin).Execute(ChekUserRegistrationState(Actions.ChangeLogin).Start);
-            builder.In(DialogState.NotRegistered).On(Actions.ChangePasssword).Execute(ChekUserRegistrationState(Actions.ChangePasssword).Start);
-            builder.In(DialogState.NotRegistered).On(Actions.ChangeSemester).Execute(ChekUserRegistrationState(Actions.ChangeSemester).Start);
+            builder.In(DialogState.NotRegistered).On(Actions.Start).Execute(() => ChekUserRegistrationState(Actions.Start));
+            builder.In(DialogState.NotRegistered).On(Actions.UserEnter).Execute(() => ChekUserRegistrationState(Actions.UserEnter));
+            builder.In(DialogState.NotRegistered).On(Actions.GetRating).Execute(() => ChekUserRegistrationState(Actions.GetRating));
+            builder.In(DialogState.NotRegistered).On(Actions.ToChangeTheData).Execute(() => ChekUserRegistrationState(Actions.ToChangeTheData));
+            builder.In(DialogState.NotRegistered).On(Actions.EnterTheLogin).Execute(() => ChekUserRegistrationState(Actions.EnterTheLogin));
+            builder.In(DialogState.NotRegistered).On(Actions.EnterThePassword).Execute(() => ChekUserRegistrationState(Actions.EnterThePassword));
+            builder.In(DialogState.NotRegistered).On(Actions.EnterTheSemester).Execute(() => ChekUserRegistrationState(Actions.EnterTheSemester));
+            builder.In(DialogState.NotRegistered).On(Actions.CompleteRegistration).Execute(() => ChekUserRegistrationState(Actions.CompleteRegistration));
+            builder.In(DialogState.NotRegistered).On(Actions.SaveChanges).Execute(() => ChekUserRegistrationState(Actions.SaveChanges));
+            builder.In(DialogState.NotRegistered).On(Actions.ChangeLogin).Execute(() => ChekUserRegistrationState(Actions.ChangeLogin));
+            builder.In(DialogState.NotRegistered).On(Actions.ChangePasssword).Execute(() => ChekUserRegistrationState(Actions.ChangePasssword));
+            builder.In(DialogState.NotRegistered).On(Actions.ChangeSemester).Execute(() => ChekUserRegistrationState(Actions.ChangeSemester));
             //
 
             //2:for registration state
@@ -107,7 +107,7 @@ namespace RatingBot.Services
             builder.In(DialogState.DataChange).On(Actions.ChangeSemester).Goto(DialogState.SemesterChange).Execute(SemesterEnter);
             builder.In(DialogState.DataChange).On(Actions.SaveChanges).Execute(SaveChanges);
             builder.In(DialogState.DataChange).On(Actions.UserEnter).Execute(SendErrorMessage);
-            builder.In(DialogState.DataChange).On(Actions.Start).Execute(StartRegistration);
+            builder.In(DialogState.DataChange).On(Actions.Start).Execute(GoToChangeData);
             builder.In(DialogState.DataChange).On(Actions.GotoRegistered).Goto(DialogState.Registered);
             //
 
@@ -156,7 +156,7 @@ namespace RatingBot.Services
 
         public async Task ExecuteCommand(Update upd)
         {
-            update = upd;
+            this.update = upd;
 
             var action = (upd.Message.Text) switch
             {
@@ -185,7 +185,7 @@ namespace RatingBot.Services
             await machine.Fire(action);
         }
 
-        private async Task ChekUserRegistrationState(Actions action)
+        private async void ChekUserRegistrationState(Actions action)
         {
             var chatId = update.Message.Chat.Id;
             var user = await repository.GetStudentAsync(chatId);
@@ -244,6 +244,15 @@ namespace RatingBot.Services
                 return;
             }
 
+
+            if (user != null && user.Pass != null && user.Log != null && user.Semester != null && action == Actions.CompleteRegistration)
+            {
+                await machine.Fire(Actions.GotoRegistration);
+                await machine.Fire(action);
+
+                return;
+            }
+
             if (user != null && user.Log == null && action == Actions.EnterTheLogin)
             {
                 await machine.Fire(Actions.GotoRegistration);
@@ -267,12 +276,18 @@ namespace RatingBot.Services
 
                 return;
             }
+
+            return;
         }
 
         private async Task StartRegistration()
         {
             var chatId = update.Message.Chat.Id;
+            var student = new Student();
 
+            student.ChatId=chatId;
+            
+            await repository.AddAsync(student);
             await client.SendTextMessageAsync(chatId,
                 "Привет,я рейтинг бот,для начала тебе нужно зарегистрироваться,т.е ввести данные от сайта lk.volsu и выбрать семестр,чтобы я мог отправить тебе твои баллы.Пожалуйста,выбери одну из комманд ниже.",
                 replyMarkup: GetRegistrationButtons());
@@ -413,7 +428,7 @@ namespace RatingBot.Services
 
             await repository.UpdateAsync(student);
             await client.SendTextMessageAsync(chatId,
-                   "Логин успешно добавлен.",
+                   "Логин успешно изменен.",
                    replyMarkup: GetChangeDataButtons());
             await machine.Fire(Actions.GotoDataChange);
 
@@ -429,7 +444,7 @@ namespace RatingBot.Services
 
             await repository.UpdateAsync(student);
             await client.SendTextMessageAsync(chatId,
-                   "Пароль успешно добавлен.",
+                   "Пароль успешно изменен.",
                    replyMarkup: GetChangeDataButtons());
             await machine.Fire(Actions.GotoDataChange);
 
@@ -445,7 +460,7 @@ namespace RatingBot.Services
 
             await repository.UpdateAsync(student);
             await client.SendTextMessageAsync(chatId,
-                   "Семестр успешно добавлен.",
+                   "Семестр успешно изменен.",
                    replyMarkup: GetChangeDataButtons());
             await machine.Fire(Actions.GotoDataChange);
 

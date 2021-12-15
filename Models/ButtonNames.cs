@@ -12,13 +12,13 @@
 
         public const string ADD_SEMESTER = "Добавить семестр";
 
-        public const string COMPLETE_REGISTRATION = "Звершить регистрацию";
+        public const string COMPLETE_REGISTRATION = "Завершить регистрацию";
 
         public const string CHANGE_LOGIN = "Изменить логин";
 
         public const string CHANGE_PASSWORD = "Изменить пароль";
 
-        public const string CHANGE_SEMESTER = "Изменить изменить семестр";
+        public const string CHANGE_SEMESTER = "Изменить семестр";
 
         public const string SAVE_CHANGES = "Сохранить изменения";
 

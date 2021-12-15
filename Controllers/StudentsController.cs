@@ -21,12 +21,11 @@ namespace RatingBot.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] Update update)
         {
-            if (update != null)
+            if (update != null && update.Message!=null)
             {
                 await machine.ExecuteCommand(update);
                 return Ok();
-            }
-
+            } 
             return BadRequest(ModelState);
         }
     }
