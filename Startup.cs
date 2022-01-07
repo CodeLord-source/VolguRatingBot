@@ -2,6 +2,7 @@
 using RatingBot.Bots;
 using RatingBot.Models;
 using RatingBot.Services;
+using RatingBot.Services.Parser;
 using VolguRatingBot.Services.Repository.Interface;
 
 namespace RatingBot
@@ -20,6 +21,9 @@ namespace RatingBot
             services.AddControllers().AddNewtonsoftJson();
             services.AddSingleton<DialogStateMachine>();
             services.AddSingleton<IRepository, StudentRepository>();
+            services.AddTransient<IParser<string>,Parser>();
+            services.AddTransient<ParserWorker<string>>();
+            services.AddTransient<HttpClient>();
             services.AddDbContext<StudentContext>(options =>
             options.UseNpgsql("name=ConnectionStrings:DefaultConnection"), ServiceLifetime.Singleton);
             services.AddTelegrammBot(configuration);

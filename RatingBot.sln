@@ -5,8 +5,6 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RatingBot", "RatingBot.csproj", "{F33F66EE-285B-4B85-B6B0-1247CFD7AD18}"
 EndProject
-Project("{13B669BE-BB05-4DDF-9536-439F39A36129}") = "Library", "..\phplib\Library.msbuildproj", "{DC8B2D72-3D89-408D-BEB1-3C22295C3346}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,10 +15,6 @@ Global
 		{F33F66EE-285B-4B85-B6B0-1247CFD7AD18}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F33F66EE-285B-4B85-B6B0-1247CFD7AD18}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F33F66EE-285B-4B85-B6B0-1247CFD7AD18}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DC8B2D72-3D89-408D-BEB1-3C22295C3346}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DC8B2D72-3D89-408D-BEB1-3C22295C3346}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DC8B2D72-3D89-408D-BEB1-3C22295C3346}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DC8B2D72-3D89-408D-BEB1-3C22295C3346}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
