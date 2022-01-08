@@ -1,4 +1,4 @@
-﻿using HtmlAgilityPack; 
+﻿using HtmlAgilityPack;
 
 namespace RatingBot.Services.Parser
 {
@@ -13,6 +13,7 @@ namespace RatingBot.Services.Parser
 
         public async Task<bool> CheckAuthorization(string log, string pass)
         {
+            var doc = new HtmlDocument();
             var _httpClient = new HttpClient();
             var values = new Dictionary<string, string>
             {
@@ -24,9 +25,12 @@ namespace RatingBot.Services.Parser
             var content = new FormUrlEncodedContent(values);
 
             var response = await _httpClient.PostAsync("https://lk.volsu.ru/user/sign-in/login", content);
+            doc.Load(response.Content.ReadAsStream());
+            var page = doc.DocumentNode;
+            var loginForm = page.SelectSingleNode("//div[@id='loginForm']"); 
 
-            if (response.StatusCode == System.Net.HttpStatusCode.OK)
-            { 
+            if (loginForm == null)
+            {
                 return true;
             }
 

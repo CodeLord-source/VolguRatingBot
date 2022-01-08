@@ -412,7 +412,7 @@ namespace RatingBot.Services
             else
             {
                 await client.SendTextMessageAsync(chatid,
-                       "Вы ввели не все данные,или введенные вами данные не верны,проверьте на првильность ввода и повторите попытку.",
+                       "Вы ввели не все данные,или введенные вами данные не верны,проверьте на правильность ввода и повторите попытку.",
                        replyMarkup: GetRegistrationButtons());
 
                 logger.LogInformation($"Не выплнено complete registration");
@@ -521,7 +521,7 @@ namespace RatingBot.Services
             else
             {
                 await client.SendTextMessageAsync(chatId,
-                       "Вы ввели не все данные,или введенные вами данные не верны,проверьте на првильность ввода и повторите попытку.",
+                       "Вы ввели не все данные,или введенные вами данные не верны,проверьте на правильность ввода и повторите попытку.",
                        replyMarkup: GetChangeDataButtons());
 
                 logger.LogInformation($"Не выплнено save changes");
