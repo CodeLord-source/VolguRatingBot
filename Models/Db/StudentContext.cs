@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace RatingBot.Models
+namespace RatingBot.Models.Db
 {
     public class StudentContext : DbContext
     {

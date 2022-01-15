@@ -1,20 +1,33 @@
 ﻿using HtmlAgilityPack;
 
-namespace RatingBot.Services.Parser
+namespace RatingBot.Services.LkVolsuParsing
 {
-    public class Parser : IParser<string>
+    public class LkVolsuParser
     {
-        public string Parse(HtmlDocument document, int? number)
-        {   
+        public bool ParseAuthorizationResponse(HtmlDocument document)
+        {
+            var page = document.DocumentNode;
+            var loginForm = page.SelectSingleNode("//div[@id='loginForm']");
+
+            if (loginForm == null)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public string ParseDataPage(HtmlDocument document, int? number)
+        {
             var rowValues = new List<List<string>>();
             var messageString = "<code>";
-            var balls = 0; 
+            var balls = 0;
             var rows = document
                 .GetElementbyId($"tab-content-0")
-                .SelectSingleNode($"//div[@id='tab-0-{number-1}']/table[@class='table table-striped table-hover grade-table']")
+                .SelectSingleNode($"//div[@id='tab-0-{number - 1}']/table[@class='table table-striped table-hover grade-table']")
                 .Descendants("tr")
                 .ToList();
-             
+
             foreach (var row in rows)
             {
                 var currentRowValues = new List<string>();
@@ -28,14 +41,14 @@ namespace RatingBot.Services.Parser
             }
 
             rowValues.RemoveAt(0);
-             
+
             foreach (var sbj in rowValues)
             {
                 var a = sbj.ToArray();
 
                 for (int i = 0; i < a.Length; i++)
                 {
-                    if(a[i].Contains("("))
+                    if (a[i].Contains("("))
                     {
                         a[i].Replace("(", " ");
                     }
@@ -69,8 +82,8 @@ namespace RatingBot.Services.Parser
                 messageString += $" :{balls} \n";
                 balls = 0;
             }
-             
-            return messageString+"</code>"; 
+
+            return $"{messageString}</code>";
         }
     }
 }

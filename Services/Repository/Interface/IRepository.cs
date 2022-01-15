@@ -1,4 +1,5 @@
 ﻿using RatingBot.Models;
+using RatingBot.Models.Db;
 
 namespace VolguRatingBot.Services.Repository.Interface
 {

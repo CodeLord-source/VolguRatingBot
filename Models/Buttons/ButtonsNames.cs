@@ -1,7 +1,9 @@
-﻿namespace RatingBot.Models
+﻿namespace RatingBot.Models.Buttons
 {
-    public static class ButtonNames
+    public static class ButtonsNames
     {
+        public const string START = "/start";
+
         public const string GET_RATING = "Рейтинг";
 
         public const string CHANGE_DATA = "Изменить данные";

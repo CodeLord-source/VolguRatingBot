@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace RatingBot.Models
+namespace RatingBot.Models.Db
 {
     [Table("students")]
     public class Student
